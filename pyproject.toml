@@ -3,21 +3,20 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "text-to-qr"
+name = "qrstudio"
 version = "0.1.0"
-description = "Library-first QR code generator (PNG/SVG) with white/transparent backgrounds."
-readme = "README.md"
+description = "Generate QR codes (GUI/CLI) with white or transparent backgrounds"
 requires-python = ">=3.9"
-authors = [{ name = "You" }]
 dependencies = [
-  "qrcode[pil]>=7.4",
-  "Pillow>=10.0",
-  "fastapi>=0.110; extra == 'web'",
-  "uvicorn>=0.29; extra == 'web'",
+  "qrcode[pil]",
+  "Pillow"
 ]
 
-[project.optional-dependencies]
-web = ["fastapi>=0.110", "uvicorn>=0.29"]
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.scripts]
+qrstudio = "qrstudio.ui.tk_app:main"
