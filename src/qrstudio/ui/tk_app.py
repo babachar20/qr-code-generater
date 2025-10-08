@@ -1,8 +1,10 @@
 from __future__ import annotations
 import sys
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+import customtkinter as ctk
+from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
+from customtkinter import CTkImage
+
 from typing import Optional
 from ..config import AppConfig
 from ..events import EventBus
@@ -10,8 +12,11 @@ from ..domain.spec import QRSpec, ErrorCorrection
 from ..services.qr_service import QRService
 from ..commands import GenerateQRCommand, SaveQRCommand
 
+ctk.set_appearance_mode("System")
+ctk.set_default_color_theme("blue")
+
 class _GuiLogger:
-    def __init__(self, text: tk.Text) -> None:
+    def __init__(self, text: ctk.CTkTextbox) -> None:
         self._t = text
     def write(self, msg: str) -> None:
         self._t.configure(state="normal")
@@ -31,13 +36,14 @@ class _Preview( object ):
         w, h = pil_image.size
         scale = min(max_side / max(w, h), 1.0)
         resized = pil_image.resize((max(1,int(w*scale)), max(1,int(h*scale))), Image.NEAREST)
-        self.photo = ImageTk.PhotoImage(resized)
+        self.photo = CTkImage(light_image=resized, dark_image=resized, size=resized.size)
         self.app.preview.configure(image=self.photo)
-        self.app.preview.image = self.photo
+        # self.app.preview.image = self.photo
+
         self.app.status.set(f"Preview {resized.size[0]}×{resized.size[1]}")
 
 class App:
-    def __init__(self, root: tk.Tk):
+    def __init__(self, root: ctk.CTk):
         self.cfg = AppConfig()
         self.root = root
         self.root.title(self.cfg.title)
@@ -46,6 +52,9 @@ class App:
         self.service = QRService()
         self._current_img = None
         self._current_qr = None
+
+        #workaround for removing image when cleared, used in on_clear()
+        self.blank_image = CTkImage(Image.new("RGBA", (1, 1), (0, 0, 0, 0)))
 
         self._build_ui()
         self.preview_out = _Preview(self)
@@ -58,61 +67,67 @@ class App:
 
     # UI
     def _build_ui(self):
-        top = ttk.Frame(self.root, padding=10)
-        top.pack(fill="x")
+        top = ctk.CTkFrame(self.root)
+        top.pack(fill="x", padx=10, pady=10)
 
-        ttk.Label(top, text="Text / URL").grid(row=0, column=0, sticky="w")
-        self.var_text = tk.StringVar()
-        self.input = ttk.Entry(top, textvariable=self.var_text, width=80)
+        ctk.CTkLabel(top, text="Text / URL").grid(row=0, column=0, sticky="w")
+        self.var_text = ctk.StringVar()
+        self.input = ctk.CTkEntry(top, textvariable=self.var_text, width=80)
         self.input.grid(row=1, column=0, columnspan=8, sticky="ew", pady=(4, 10))
         self.input.focus()
 
-        ttk.Label(top, text="Error correction").grid(row=2, column=0, sticky="w")
-        self.var_ec = tk.StringVar(value="M")
-        ttk.Combobox(top, textvariable=self.var_ec, values=["L","M","Q","H"], width=5,
-                     state="readonly").grid(row=3, column=0, sticky="w")
+        self.var_ec = ctk.StringVar(value="M")
+        ctk.CTkLabel(top, text="Error correction").grid(row=2, column=0, sticky="w")
+        ctk.CTkComboBox(top, variable=self.var_ec, values=["L","M","Q","H"], width=80, state="readonly")\
+            .grid(row=3, column=0, sticky="w")
 
-        ttk.Label(top, text="Box size").grid(row=2, column=1, sticky="w", padx=(10,0))
-        self.var_box = tk.IntVar(value=self.cfg.default_box_size)
-        ttk.Spinbox(top, from_=2, to=40, textvariable=self.var_box, width=6)\
-            .grid(row=3, column=1, sticky="w", padx=(10,0))
+        self.var_box = ctk.StringVar(value=self.cfg.default_box_size) #used StringVar, as IntVar was throwing error whenever the value was cleared and re-entered in the entry box
+        ctk.CTkLabel(top, text="Box size").grid(row=2, column=1, sticky="w", padx=10)
+        ctk.CTkEntry(top, textvariable=self.var_box, width=60)\
+            .grid(row=3, column=1, sticky="w", padx=10)
 
-        ttk.Label(top, text="Border").grid(row=2, column=2, sticky="w", padx=(10,0))
-        self.var_border = tk.IntVar(value=self.cfg.default_border)
-        ttk.Spinbox(top, from_=1, to=16, textvariable=self.var_border, width=6)\
-            .grid(row=3, column=2, sticky="w", padx=(10,0))
+        self.var_border = ctk.StringVar(value=self.cfg.default_border) #used StringVar, as IntVar was throwing error whenever the value was cleared and re-entered in the entry box
+        ctk.CTkLabel(top, text="Border").grid(row=2, column=2, sticky="w", padx=10)
+        ctk.CTkEntry(top, textvariable=self.var_border, width=60)\
+            .grid(row=3, column=2, sticky="w", padx=10)
 
-        ttk.Label(top, text="Fill color").grid(row=2, column=3, sticky="w", padx=(10,0))
-        self.var_fill = tk.StringVar(value=self.cfg.default_fill)
-        ttk.Entry(top, textvariable=self.var_fill, width=10)\
-            .grid(row=3, column=3, sticky="w", padx=(10,0))
+        self.var_fill = ctk.StringVar(value=self.cfg.default_fill)
+        ctk.CTkLabel(top, text="Fill color").grid(row=2, column=3, sticky="w", padx=10)
+        ctk.CTkEntry(top, textvariable=self.var_fill, width=80)\
+            .grid(row=3, column=3, sticky="w", padx=10)
 
-        ttk.Label(top, text="Background").grid(row=2, column=4, sticky="w", padx=(10,0))
-        self.var_bg = tk.StringVar(value="white")
-        bg_frame = ttk.Frame(top); bg_frame.grid(row=3, column=4, sticky="w", padx=(10,0))
-        ttk.Radiobutton(bg_frame, text="White", value="white", variable=self.var_bg).pack(side="left")
-        ttk.Radiobutton(bg_frame, text="Transparent (PNG)", value="transparent", variable=self.var_bg).pack(side="left")
+        self.var_bg = ctk.StringVar(value="white")
+        ctk.CTkLabel(top, text="Background").grid(row=2, column=4, sticky="w", padx=10)
+        bg_frame = ctk.CTkFrame(top)
+        bg_frame.grid(row=3, column=4, sticky="w", padx=10)
+        ctk.CTkRadioButton(bg_frame, text="White", variable=self.var_bg, value="white").pack(side="left")
+        ctk.CTkRadioButton(bg_frame, text="Transparent (PNG)", variable=self.var_bg, value="transparent").pack(side="left")
 
-        actions = ttk.Frame(top); actions.grid(row=3, column=7, sticky="e")
-        ttk.Button(actions, text="Generate (Ctrl+G)", command=self.on_generate).pack(side="left", padx=4)
-        ttk.Button(actions, text="Save… (Ctrl+S)", command=self.on_save).pack(side="left", padx=4)
-        ttk.Button(actions, text="Clear (Esc)", command=self.on_clear).pack(side="left", padx=4)
+        actions = ctk.CTkFrame(top)
+        actions.grid(row=3, column=5, sticky="e")
+        ctk.CTkButton(actions, text="Generate (Ctrl+G)", command=self.on_generate).pack(side="left", padx=4)
+        ctk.CTkButton(actions, text="Save (Ctrl+S)", command=self.on_save).pack(side="left", padx=4)
+        ctk.CTkButton(actions, text="Clear (Esc)", command=self.on_clear).pack(side="left", padx=4)
 
-        top.columnconfigure(0, weight=1)
+        mid = ctk.CTkFrame(self.root)
+        mid.pack(fill="both", expand=True, padx=10, pady=(0,10))
 
-        mid = ttk.Frame(self.root, padding=(10,0,10,10)); mid.pack(fill="both", expand=True)
-        left = ttk.Frame(mid); left.pack(side="left", fill="both", expand=True)
-        ttk.Label(left, text="Preview").pack(anchor="w")
-        self.preview = ttk.Label(left, relief="groove"); self.preview.pack(fill="both", expand=True, pady=(4,0))
+        left = ctk.CTkFrame(mid)
+        left.pack(side="left", fill="both", expand=True)
+        ctk.CTkLabel(left, text="Preview").pack(anchor="w")
+        self.preview = ctk.CTkLabel(left, text="No preview", fg_color="gray20", corner_radius=6)
+        self.preview.pack(fill="both", expand=True, pady=4)
 
-        right = ttk.Frame(mid, width=280); right.pack(side="right", fill="y")
-        ttk.Label(right, text="Console").pack(anchor="w")
-        self.console = tk.Text(right, height=12, wrap="word", state="disabled")
-        self.console.pack(fill="both", expand=True, pady=(4,0))
+        right = ctk.CTkFrame(mid, width=280)
+        right.pack(side="right", fill="y")
+        ctk.CTkLabel(right, text="Console").pack(anchor="w")
+        self.console = ctk.CTkTextbox(right, height=200)
+        self.console.pack(fill="both", expand=True, pady=4)
         self.logger = _GuiLogger(self.console)
         self.bus.subscribe(self.logger.write)
-        self.status = tk.StringVar(value="Ready")
-        ttk.Label(self.root, textvariable=self.status, anchor="w", relief="sunken").pack(fill="x", side="bottom")
+
+        self.status = ctk.StringVar(value="Ready")
+        ctk.CTkLabel(self.root, textvariable=self.status, anchor="w").pack(fill="x", side="bottom")
 
     # Helpers
     def _spec(self) -> QRSpec:
@@ -129,6 +144,7 @@ class App:
     def on_generate(self):
         cmd = GenerateQRCommand(self._spec(), self.service, self.preview_out, self.bus)
         try:
+            self.preview.configure(text="")
             cmd.execute()
         except ValueError:
             messagebox.showwarning("No input", "Please enter some text/URL to encode.")
@@ -153,14 +169,14 @@ class App:
 
     def on_clear(self):
         self.var_text.set("")
-        self.preview.configure(image="", text="No preview")
+        self.preview.configure(image=self.blank_image, text="No preview")
         self._current_img = None
         self._current_qr = None
         self.bus.publish("Cleared.")
         self.status.set("Cleared")
 
 def main():
-    root = tk.Tk()
+    root = ctk.CTk()
     # Simple scaling tweak for macOS HiDPI
     try:
         if sys.platform == "darwin":
