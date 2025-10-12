@@ -138,16 +138,19 @@ class App:
             messagebox.showinfo("Nothing to save", "Generate a QR code first.")
             return
         def _ask_path():
-            return filedialog.asksaveasfilename(
+            path = filedialog.asksaveasfilename(
                 title="Save QR code",
-                defaultextension=".png",
                 filetypes=[
                     ("PNG Image", "*.png"),
-                    ("JPEG Image", "*.jpg;*.jpeg"),
+                    ("JPEG Image", "*.jpg"),
                     ("SVG Vector", "*.svg"),
                     ("All Files", "*.*")
                 ],
             )
+            # Ensure file has an extension
+            if path and '.' not in path.split('/')[-1]:
+                path += '.png'  # Default to PNG if no extension provided
+            return path
         cmd = SaveQRCommand(self._spec, _ask_path, self.service, self.bus)
         try:
             cmd.execute()
