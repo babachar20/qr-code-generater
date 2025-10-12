@@ -29,6 +29,19 @@ class SVGEncoder:
         with open(path, "wb") as f:
             svg_qr.make_image(fill_color=fill_color, back_color=None).save(f)
 
+class JPEGEncoder:
+    ext = "jpg"
+    def save(self, qr, path, fill_color, back_color):
+        img = qr.make_image(fill_color=fill_color, back_color=back_color)
+        # JPEG doesn't support transparency, convert to RGB
+        img = img.convert("RGB")
+        img.save(path, format="JPEG", quality=95)
+
 def encoder_for_ext(ext: str) -> ImageEncoder:
     e = ext.lower().lstrip(".")
-    return PNGEncoder() if e not in ("svg",) else SVGEncoder()
+    if e == "svg":
+        return SVGEncoder()
+    elif e in ("jpg", "jpeg"):
+        return JPEGEncoder()
+    else:
+        return PNGEncoder()

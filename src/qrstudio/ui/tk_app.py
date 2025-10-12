@@ -141,7 +141,12 @@ class App:
             return filedialog.asksaveasfilename(
                 title="Save QR code",
                 defaultextension=".png",
-                filetypes=[("PNG Image", "*.png"), ("SVG Vector", "*.svg"), ("All Files", "*.*")],
+                filetypes=[
+                    ("PNG Image", "*.png"),
+                    ("JPEG Image", "*.jpg;*.jpeg"),
+                    ("SVG Vector", "*.svg"),
+                    ("All Files", "*.*")
+                ],
             )
         cmd = SaveQRCommand(self._spec, _ask_path, self.service, self.bus)
         try:
