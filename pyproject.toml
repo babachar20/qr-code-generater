@@ -9,7 +9,8 @@ description = "Generate QR codes (GUI/CLI) with white or transparent backgrounds
 requires-python = ">=3.9"
 dependencies = [
   "qrcode[pil]",
-  "Pillow"
+  "Pillow",
+  "customtkinter>=5.2.2",
 ]
 
 [tool.setuptools]
